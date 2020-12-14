@@ -7,58 +7,75 @@ namespace ScooterRental.Library.Company
     {
         public decimal CalculateIncome(decimal pricePerMinute, DateTime startRentDate, DateTime endRentDate)
         {
-            decimal lastDayEarnings = 0.00M;
-            decimal otherEarnings = 0.00M;
+            decimal totalIncome = 0.00M;
+            decimal firstDayIncome = 0.00M;
+            decimal lastDayIncome = 0.00M;
+            decimal timeBetweenFirstAndLastDayIncome = 0.00M;
+            if (pricePerMinute == 0)
+            {
+                return totalIncome;
+            }
             TimeSpan spanTotal = endRentDate.Subtract(startRentDate);
-            double totalMinutes = spanTotal.TotalMinutes;
-            TimeSpan firstDay = new DateTime(
-                startRentDate.Year, startRentDate.Month, startRentDate.Day, 23, 59, 59).Subtract(
-                startRentDate);
-
-            double restMinutes = 0;
-            decimal firstDayEarnings = GetDayEarnings(totalMinutes, pricePerMinute);
-            if (totalMinutes > firstDay.TotalMinutes)
+            TimeSpan firstDayTime = GetFirstDayTime(startRentDate);
+            if (firstDayTime.TotalMinutes >= spanTotal.TotalMinutes)
             {
-                firstDayEarnings = (decimal)firstDay.TotalMinutes * pricePerMinute;
-                if (firstDayEarnings > 20)
-                {
-                    firstDayEarnings = 20.00M;
-                }
-                TimeSpan lastDay = endRentDate.Subtract(new DateTime(
-                    endRentDate.Year, endRentDate.Month, endRentDate.Day, 00, 00, 00));
-                lastDayEarnings = GetDayEarnings(lastDay.TotalMinutes, pricePerMinute);
-                restMinutes = totalMinutes - (firstDay.TotalMinutes + lastDay.TotalMinutes);
+                firstDayIncome = GetDayIncome(spanTotal.TotalMinutes, pricePerMinute);
+                totalIncome += firstDayIncome;
+                return totalIncome;
             }
-
-            if (restMinutes >= 1)
+            TimeSpan lastDayTime = GetLastDayTime(endRentDate);
+            TimeSpan timeBetweenFirstAndLastDay = GetTimeBetweenFirstAndLastDayTime(startRentDate, endRentDate);
+            if (timeBetweenFirstAndLastDay.TotalMinutes < 1)
             {
-                TimeSpan timeBetweenFirstAndLastDay = new DateTime(
-                        endRentDate.Year, endRentDate.Month, endRentDate.Day, 00, 00, 00)
-                    .Subtract(new DateTime(
-                        startRentDate.Year, startRentDate.Month, startRentDate.Day, 23, 59, 59));
-                otherEarnings = GetDayEarnings(restMinutes, pricePerMinute);
-                if (timeBetweenFirstAndLastDay.Days >= 1)
-                {
-                    var avg = (decimal)restMinutes * pricePerMinute / timeBetweenFirstAndLastDay.Days;
-                    if (avg > 20)
-                    {
-                        otherEarnings = 20.00M * timeBetweenFirstAndLastDay.Days;
-                    }
-                }
-                else
-                {
-                    if (otherEarnings > 20)
-                    {
-                        otherEarnings = 20.00M;
-                    }
-                }
-
+                firstDayIncome = GetDayIncome(firstDayTime.TotalMinutes, pricePerMinute);
+                lastDayIncome = GetDayIncome(lastDayTime.TotalMinutes, pricePerMinute);
+                totalIncome += firstDayIncome + lastDayIncome;
+                return totalIncome;
             }
-            var earnings = otherEarnings + firstDayEarnings + lastDayEarnings;
-            return earnings;
+            firstDayIncome = GetDayIncome(firstDayTime.TotalMinutes, pricePerMinute);
+            lastDayIncome = GetDayIncome(lastDayTime.TotalMinutes, pricePerMinute);
+            totalIncome += firstDayIncome + lastDayIncome;
+            if (timeBetweenFirstAndLastDay.Days >= 1)
+            {
+                var avg = (decimal)timeBetweenFirstAndLastDay.TotalMinutes * pricePerMinute / timeBetweenFirstAndLastDay.Days;
+                if (avg > 20)
+                {
+                    timeBetweenFirstAndLastDayIncome = 20.00M * timeBetweenFirstAndLastDay.Days;
+                    totalIncome += timeBetweenFirstAndLastDayIncome;
+                }
+            }
+            else
+            {
+                timeBetweenFirstAndLastDayIncome =
+                    GetDayIncome(timeBetweenFirstAndLastDay.TotalMinutes, pricePerMinute);
+                totalIncome += timeBetweenFirstAndLastDayIncome;
+            }
+            return totalIncome;
         }
 
-        private decimal GetDayEarnings(double totalMinutes, decimal pricePerMinute)
+        private TimeSpan GetFirstDayTime(DateTime startDate)
+        {
+            TimeSpan firstDay = new DateTime(
+                    startDate.Year, startDate.Month, startDate.Day, 23, 59, 59)
+                .Subtract(startDate);
+            return firstDay;
+        }
+        private TimeSpan GetLastDayTime(DateTime endDate)
+        {
+            TimeSpan lastDay = endDate.Subtract(new DateTime(
+                endDate.Year, endDate.Month, endDate.Day, 00, 00, 00));
+            return lastDay;
+        }
+
+        private TimeSpan GetTimeBetweenFirstAndLastDayTime(DateTime startDate, DateTime endDate)
+        {
+            TimeSpan timeBetweenFirstAndLastDay = new DateTime(
+                    endDate.Year, endDate.Month, endDate.Day, 00, 00, 00)
+                .Subtract(new DateTime(
+                    startDate.Year, startDate.Month, startDate.Day, 23, 59, 59));
+            return timeBetweenFirstAndLastDay;
+        }
+        private decimal GetDayIncome(double totalMinutes, decimal pricePerMinute)
         {
             decimal sum = (decimal)totalMinutes * pricePerMinute;
             if (sum > 20)
