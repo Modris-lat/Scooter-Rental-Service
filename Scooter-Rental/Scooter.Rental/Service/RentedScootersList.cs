@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
-using ScooterRental.Library.Models;
 
 namespace ScooterRental.Library.Service
 {
@@ -19,7 +18,7 @@ namespace ScooterRental.Library.Service
         {
             if (!scooter.IsRented)
             {
-                throw new AddRentedScooterException($"Scooter {scooter.Id} is not rented!");
+                throw new AddNotRentedScooterException($"Scooter {scooter.Id} is not rented.");
             }
             _rentedScooters.Add(new RentedScooter(scooter.Id, scooter.PricePerMinute, time));
         }
@@ -29,14 +28,14 @@ namespace ScooterRental.Library.Service
             RentedScooter scooter = GetScooterById(id);
             if (scooter == null)
             {
-                throw new RemoveRentedScooterException($"Scooter {id} is not rented!");
+                throw new RemoveNonRentedScooterException($"Scooter {id} is not rented.");
             }
             _rentedScooters.Remove(scooter);
         }
 
         public IList<RentedScooter> GetScooters()
         {
-            return _rentedScooters;
+            return _rentedScooters.ToList();
         }
 
         public RentedScooter GetScooterById(string scooterId)

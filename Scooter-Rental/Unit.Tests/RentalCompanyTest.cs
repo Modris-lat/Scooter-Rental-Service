@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using ScooterRental.Library.Company;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
-using ScooterRental.Library.Models;
 using ScooterRental.Library.Service;
 using Xunit;
 
@@ -24,24 +23,29 @@ namespace Unit.Tests
         }
 
         [Fact]
-        public void CompanyName()
+        public void CompanyNameValid()
         {
             Assert.True(_rentalCompany.Name == "Company");
         }
         [Fact]
-        public void StartRentInvalidId()
+        public void CompanyNameInvalid()
         {
-            Assert.Throws<StartRentException>(() => _rentalCompany.StartRent("01"));
+            Assert.False(_rentalCompany.Name == "some");
         }
         [Fact]
-        public void StartRentScooterIsAlreadyRented()
+        public void StartRentForNonExistingScooterThrowsException()
+        {
+            Assert.Throws<StartRentNonExistingScooterException>(() => _rentalCompany.StartRent("01"));
+        }
+        [Fact]
+        public void StartRentScooterIsAlreadyRentedThrowsException()
         {
             _scooterService.AddScooter("01", 0.10M);
             _scooterService.GetScooterById("01").IsRented = true;
-            Assert.Throws<StartRentException>(() => _rentalCompany.StartRent("01"));
+            Assert.Throws<StartRentForRentedScooterException>(() => _rentalCompany.StartRent("01"));
         }
         [Fact]
-        public void StartRentSetScooterToRented()
+        public void StartRentSetScooterToRentedGetScooterByIdReturnsScooterIsRented()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
@@ -49,20 +53,20 @@ namespace Unit.Tests
             Assert.True(scooter.IsRented);
         }
         [Fact]
-        public void StartRentAddScooterToRentedScootersList()
+        public void StartRentAddScooterToRentedScootersListRentedScootersReturnsValidRentedScooterId()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
             RentedScooter scooter = _rentedScooters.GetScooterById("01");
-            Assert.True(scooter != null);
+            Assert.True(scooter.Id == "01");
         }
         [Fact]
-        public void EndRentInvalidId()
+        public void EndRentForNotRentedScooterThrowsException()
         {
-            Assert.Throws<EndRentException>(() => _rentalCompany.EndRent("01"));
+            Assert.Throws<EndRentForNotRentedScooterException>(() => _rentalCompany.EndRent("01"));
         }
         [Fact]
-        public void EndRentRemoveRentedScooter()
+        public void EndRentRemovesRentedScooterReturnsEmptyRentedScooterList()
         {
             _scooterService.AddScooter("02", 0.10M);
             _rentalCompany.StartRent("02");
@@ -71,7 +75,7 @@ namespace Unit.Tests
             Assert.False(rentedScooters.Any());
         }
         [Fact]
-        public void EndRentSetScooterIsRentedToFalse()
+        public void EndRentSetScooterIsRentedToFalseScooterServiceReturnsScooterWithPropertyIsRentedFalse()
         {
             _scooterService.AddScooter("02", 0.10M);
             _rentalCompany.StartRent("02");
@@ -80,7 +84,7 @@ namespace Unit.Tests
             Assert.False(scooter.IsRented);
         }
         [Fact]
-        public async Task EndRentIncome()
+        public async Task EndRentReturnsIncomeMoreThan0()
         {
             _scooterService.AddScooter("02", 0.10M);
             _rentalCompany.StartRent("02");
@@ -88,12 +92,12 @@ namespace Unit.Tests
                 Assert.True(_rentalCompany.EndRent("02") > 0);
         }
         [Fact]
-        public void CalculateIncomeIs0Eur()
+        public void CalculateIncomeWithNoPreviousIncomeReturns0()
         {
             Assert.True(_rentalCompany.CalculateIncome(null, false) == 0);
         }
         [Fact]
-        public async Task CalculateIncomeIsNot0EurWithYearNullAndIncludeRentedFalse()
+        public async Task CalculateIncomeIsNot0EurWithYearNullAndIncludeRentedFalseReturnsMoreThan0()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
@@ -102,7 +106,7 @@ namespace Unit.Tests
             Assert.True(_rentalCompany.CalculateIncome(null, false) > 0);
         }
         [Fact]
-        public async Task CalculateIncomeIsNot0EurWithYearNullAndIncludeRentedTrue()
+        public async Task CalculateIncomeIsNot0EurWithYearNullAndIncludeRentedTrueReturnsMoreThan0()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
@@ -110,7 +114,7 @@ namespace Unit.Tests
             Assert.True(_rentalCompany.CalculateIncome(null, true) > 0);
         }
         [Fact]
-        public async Task CalculateIncomeIs0EurWithYearAndIncludeRentedFalse()
+        public async Task CalculateIncomeIs0EurWithYearAndIncludeRentedFalseReturns0()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
@@ -118,15 +122,15 @@ namespace Unit.Tests
             Assert.True(_rentalCompany.CalculateIncome(2020, false) == 0);
         }
         [Fact]
-        public void CalculateIncomeInvalidYear()
+        public void CalculateIncomeInvalidYearThrowsException()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
-            Assert.Throws<CalculateIncomeException>(
+            Assert.Throws<CalculateIncomeInvalidYearException>(
                 ()=>_rentalCompany.CalculateIncome(2030, false));
         }
         [Fact]
-        public async Task CalculateIncomeIsNot0EurWithYearAndIncludeRentalsTrue()
+        public async Task CalculateIncomeIsNot0EurWithYearAndIncludeRentalsTrueReturnsMoreThan0()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
@@ -134,12 +138,17 @@ namespace Unit.Tests
             Assert.True(_rentalCompany.CalculateIncome(2020, true) > 0);
         }
         [Fact]
-        public async Task CalculateIncomeIs0EurWithYearAndIncludeRentalsTrue()
+        public async Task CalculateIncomeIs0EurWithYearAndIncludeRentalsTrueReturns0()
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
             await Task.Delay(1000);
             Assert.True(_rentalCompany.CalculateIncome(2015, true) == 0);
+        }
+        [Fact]
+        public void CalculateIncomeIs0EurWithCurrentYearAndIncludeRentalsTrueReturns0()
+        {
+            Assert.True(_rentalCompany.CalculateIncome(2020, true) == 0);
         }
     }
 }

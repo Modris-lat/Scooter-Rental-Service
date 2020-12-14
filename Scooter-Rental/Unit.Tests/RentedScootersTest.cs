@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
-using ScooterRental.Library.Models;
 using ScooterRental.Library.Service;
 using Xunit;
 
@@ -24,13 +23,13 @@ namespace Unit.Tests
             Assert.True(scootersCount == 0);
         }
         [Fact]
-        public void GetNonExistingScooterById()
+        public void GetScooterByIdReturnsScooterIsNull()
         {
             RentedScooter scooter = _rentedScooters.GetScooterById("01");
             Assert.True(scooter == null);
         }
         [Fact]
-        public void AddScooterTrue()
+        public void AddScooterGetScootersReturnsScooterListCount1AndValidScooterProperties()
         {
             var time = new DateTime(2020, 12, 10, 14, 00, 00);
             _rentedScooters.AddScooter(new Scooter("01", 0.10M){IsRented = true}, time);
@@ -42,14 +41,14 @@ namespace Unit.Tests
                         rentedScooter.StartRentDateTime == time);
         }
         [Fact]
-        public void AddScooterIsNotRented()
+        public void AddScooterIsNotRentedThrowsException()
         {
             var time = new DateTime(2020, 12, 10, 14, 00, 00);
-            Assert.Throws<AddRentedScooterException>(
+            Assert.Throws<AddNotRentedScooterException>(
                 () => _rentedScooters.AddScooter(new Scooter("01", 0.10M), time));
         }
         [Fact]
-        public void RemoveExistingScooter()
+        public void RemoveScooterGetScootersReturnsEmptyRentedScootersList()
         {
             var time = new DateTime(2020, 12, 10, 14, 00, 00);
             _rentedScooters.AddScooter(new Scooter("01", 0.20M){IsRented = true}, time);
@@ -58,9 +57,9 @@ namespace Unit.Tests
             Assert.False(scooters.Any());
         }
         [Fact]
-        public void RemoveNonExistingScooter()
+        public void RemoveNonExistingScooterThrowsException()
         {
-            Assert.Throws<RemoveRentedScooterException>(() => _rentedScooters.RemoveScooter("01"));
+            Assert.Throws<RemoveNonRentedScooterException>(() => _rentedScooters.RemoveScooter("01"));
         }
     }
 }

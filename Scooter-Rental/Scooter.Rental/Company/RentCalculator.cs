@@ -16,7 +16,7 @@ namespace ScooterRental.Library.Company
                 startRentDate);
 
             double restMinutes = 0;
-            decimal firstDayEarnings = CalculateEarnings(totalMinutes, pricePerMinute);
+            decimal firstDayEarnings = GetDayEarnings(totalMinutes, pricePerMinute);
             if (totalMinutes > firstDay.TotalMinutes)
             {
                 firstDayEarnings = (decimal)firstDay.TotalMinutes * pricePerMinute;
@@ -26,7 +26,7 @@ namespace ScooterRental.Library.Company
                 }
                 TimeSpan lastDay = endRentDate.Subtract(new DateTime(
                     endRentDate.Year, endRentDate.Month, endRentDate.Day, 00, 00, 00));
-                lastDayEarnings = CalculateEarnings(lastDay.TotalMinutes, pricePerMinute);
+                lastDayEarnings = GetDayEarnings(lastDay.TotalMinutes, pricePerMinute);
                 restMinutes = totalMinutes - (firstDay.TotalMinutes + lastDay.TotalMinutes);
             }
 
@@ -36,7 +36,7 @@ namespace ScooterRental.Library.Company
                         endRentDate.Year, endRentDate.Month, endRentDate.Day, 00, 00, 00)
                     .Subtract(new DateTime(
                         startRentDate.Year, startRentDate.Month, startRentDate.Day, 23, 59, 59));
-                otherEarnings = CalculateEarnings(restMinutes, pricePerMinute);
+                otherEarnings = GetDayEarnings(restMinutes, pricePerMinute);
                 if (timeBetweenFirstAndLastDay.Days >= 1)
                 {
                     var avg = (decimal)restMinutes * pricePerMinute / timeBetweenFirstAndLastDay.Days;
@@ -58,7 +58,7 @@ namespace ScooterRental.Library.Company
             return earnings;
         }
 
-        private decimal CalculateEarnings(double totalMinutes, decimal pricePerMinute)
+        private decimal GetDayEarnings(double totalMinutes, decimal pricePerMinute)
         {
             decimal sum = (decimal)totalMinutes * pricePerMinute;
             if (sum > 20)

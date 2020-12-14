@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ScooterRental.Library.Models;
+using ScooterRental.Library.Service;
 
 namespace ScooterRental.Library.Interfaces
 {

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
-using ScooterRental.Library.Models;
 using ScooterRental.Library.Service;
 using Xunit;
 
@@ -24,13 +23,13 @@ namespace Unit.Tests
             Assert.True(scootersCount == 0);
         }
         [Fact]
-        public void GetNonExistingScooterById()
+        public void GetScooterByIdNonExistingScooterReturnNull()
         {
             Scooter scooter = _scooterService.GetScooterById("01");
             Assert.True(scooter == null);
         }
         [Fact]
-        public void AddScooterTrue()
+        public void AddScooterListCountIs1WithValidScooterProperties()
         {
             _scooterService.AddScooter("01", 0.10M);
             IList<Scooter> scooters = _scooterService.GetScooters();
@@ -41,7 +40,7 @@ namespace Unit.Tests
                         scooter.IsRented == false);
         }
         [Fact]
-        public void AddManyScooters()
+        public void AddScooterAdd4ScootersAndGetScootersReturns4Items()
         {
             _scooterService.AddScooter("01", 0.10M);
             _scooterService.AddScooter("02", 0.10M);
@@ -58,18 +57,18 @@ namespace Unit.Tests
             Assert.True(scooter.Id == "01" && scooter.PricePerMinute == 0.10M && scooter.IsRented == false);
         }
         [Fact]
-        public void AddScooterWithExistingId()
+        public void AddScooterAddingExistingScooterThrowsException()
         {
             _scooterService.AddScooter("01", 0.10M);
-            Assert.Throws<AddScooterException>(()=> _scooterService.AddScooter("01", 0.10M));
+            Assert.Throws<AddScooterWithExistingId>(()=> _scooterService.AddScooter("01", 0.10M));
         }
         [Fact]
-        public void AddScooterWithNegativePrice()
+        public void AddScooterWithNegativePriceThrowsException()
         {
-            Assert.Throws<AddScooterException>(() => _scooterService.AddScooter("01", -0.10M));
+            Assert.Throws<AddScooterWithNegativePriceException>(() => _scooterService.AddScooter("01", -0.10M));
         }
         [Fact]
-        public void RemoveExistingScooter()
+        public void RemoveScooterGetScootersReturnsEmptyList()
         {
             _scooterService.AddScooter("01", 0.20M);
             _scooterService.RemoveScooter("01");
@@ -77,16 +76,16 @@ namespace Unit.Tests
             Assert.False(scooters.Any());
         }
         [Fact]
-        public void RemoveNonExistingScooter()
+        public void RemoveNonExistingScooterThrowsException()
         {
-            Assert.Throws<RemoveScooterException>(() => _scooterService.RemoveScooter("01"));
+            Assert.Throws<RemoveNonExistingScooterException>(() => _scooterService.RemoveScooter("01"));
         }
         [Fact]
-        public void RemoveScooterIsRented()
+        public void RemoveScooterIsRentedThrowsException()
         {
             _scooterService.AddScooter("01", 0.20M);
             _scooterService.GetScooterById("01").IsRented = true;
-            Assert.Throws<RemoveScooterException>(() => _scooterService.RemoveScooter("01"));
+            Assert.Throws<RemoveRentedScooterException>(() => _scooterService.RemoveScooter("01"));
         }
     }
 }

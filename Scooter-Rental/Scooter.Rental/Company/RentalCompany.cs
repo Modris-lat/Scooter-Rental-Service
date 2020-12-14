@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
-using ScooterRental.Library.Models;
+using ScooterRental.Library.Service;
 
 namespace ScooterRental.Library.Company
 {
@@ -29,12 +29,12 @@ namespace ScooterRental.Library.Company
             Scooter scooter = _scooterService.GetScooterById(id);
             if (scooter == null)
             {
-                throw new StartRentException($"Scooter {id} does not exist!");
+                throw new StartRentNonExistingScooterException($"Scooter {id} does not exist.");
             }
 
             if (scooter.IsRented)
             {
-                throw new StartRentException($"Scooter {id} is already rented!");
+                throw new StartRentForRentedScooterException($"Scooter {id} is already rented.");
             }
             _scooterService.GetScooterById(id).IsRented = true;
             _rentedScooters.AddScooter(scooter, DateTime.Now);
@@ -45,7 +45,7 @@ namespace ScooterRental.Library.Company
             RentedScooter rentedScooter = _rentedScooters.GetScooterById(id);
             if (rentedScooter == null)
             {
-                throw new EndRentException($"Scooter {id} is not rented!");
+                throw new EndRentForNotRentedScooterException($"Scooter {id} is not rented.");
             }
             _rentedScooters.RemoveScooter(id);
             _scooterService.GetScooterById(id).IsRented = false;
@@ -69,26 +69,24 @@ namespace ScooterRental.Library.Company
             {
                 if (includeNotCompletedRentals)
                 {
-                    GetIncomeFromRentedScooters();
+                    StartAndEndRent();
                 }
                 return _totalIncome.Sum(y => y.Value);
             }
             int key = year ?? default(int);
             if (DateTime.Now.Year < key)
             {
-                throw new CalculateIncomeException($"Invalid year {year}!");
+                throw new CalculateIncomeInvalidYearException($"Invalid year {year}.");
             }
-            if (key == DateTime.Now.Year && includeNotCompletedRentals)
+            if (key == DateTime.Now.Year && includeNotCompletedRentals && _rentedScooters.GetScooters().Any())
             {
-                GetIncomeFromRentedScooters();
-                return _totalIncome[key];
+                StartAndEndRent();
+                return _totalIncome.SingleOrDefault(y => y.Key == key).Value;
             }
-            decimal income =
-                _totalIncome.SingleOrDefault(y => y.Key == key).Value;
-            return income;
+            return _totalIncome.SingleOrDefault(y => y.Key == key).Value;
         }
 
-        void GetIncomeFromRentedScooters()
+        void StartAndEndRent()
         {
             IList<RentedScooter> rentedScooters = _rentedScooters.GetScooters();
             int count = rentedScooters.Count;

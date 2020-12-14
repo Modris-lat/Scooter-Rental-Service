@@ -2,7 +2,6 @@
 using System.Linq;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
-using ScooterRental.Library.Models;
 
 namespace ScooterRental.Library.Service
 {
@@ -18,39 +17,48 @@ namespace ScooterRental.Library.Service
         {
             if (pricePerMinute < 0)
             {
-                throw new AddScooterException($"Cannot add scooter with negative price {pricePerMinute}!");
+                throw new AddScooterWithNegativePriceException($"Cannot add scooter with negative price {pricePerMinute}.");
             }
 
-            if (GetScooterById(id) != null)
+            if (ScooterExists(id))
             {
-                throw new AddScooterException($"Scooter {id} already exists!");
+                throw new AddScooterWithExistingId($"Scooter {id} already exists.");
             }
             _scooters.Add(new Scooter(id, pricePerMinute));
         }
 
         public void RemoveScooter(string id)
         {
-            var scooter = GetScooterById(id);
-            if (scooter == null)
+            if (!ScooterExists(id))
             {
-                throw new RemoveScooterException($"Scooter {id} does not exist!");
+                throw new RemoveNonExistingScooterException($"Scooter {id} does not exist.");
             }
-
+            var scooter = GetScooterById(id);
             if (scooter.IsRented)
             {
-                throw new RemoveScooterException($"Scooter {id} is rented");
+                throw new RemoveRentedScooterException($"Scooter {id} is rented.");
             }
             _scooters.Remove(scooter);
         }
 
         public IList<Scooter> GetScooters()
         {
-            return _scooters;
+            return _scooters.ToList();
         }
 
         public Scooter GetScooterById(string scooterId)
         {
             return _scooters.SingleOrDefault(sc => sc.Id == scooterId);
+        }
+
+        bool ScooterExists(string id)
+        {
+            Scooter scooter = GetScooterById(id);
+            if (scooter == null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
