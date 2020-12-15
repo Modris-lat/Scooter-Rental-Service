@@ -88,7 +88,7 @@ namespace Unit.Tests
         {
             _scooterService.AddScooter("02", 0.10M);
             _rentalCompany.StartRent("02");
-            await Task.Delay(1000);
+            await Task.Delay(3000);
                 Assert.True(_rentalCompany.EndRent("02") > 0);
         }
         [Fact]
@@ -101,7 +101,7 @@ namespace Unit.Tests
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
-            await Task.Delay(1000);
+            await Task.Delay(3000);
             _rentalCompany.EndRent("01");
             Assert.True(_rentalCompany.CalculateIncome(null, false) > 0);
         }
@@ -110,7 +110,7 @@ namespace Unit.Tests
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
-            await Task.Delay(1000);
+            await Task.Delay(3000);
             Assert.True(_rentalCompany.CalculateIncome(null, true) > 0);
         }
         [Fact]
@@ -134,7 +134,7 @@ namespace Unit.Tests
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
-            await Task.Delay(1000);
+            await Task.Delay(3000);
             Assert.True(_rentalCompany.CalculateIncome(2020, true) > 0);
         }
         [Fact]
@@ -142,13 +142,21 @@ namespace Unit.Tests
         {
             _scooterService.AddScooter("01", 0.10M);
             _rentalCompany.StartRent("01");
-            await Task.Delay(1000);
+            await Task.Delay(3000);
             Assert.True(_rentalCompany.CalculateIncome(2015, true) == 0);
         }
         [Fact]
         public void CalculateIncomeIs0EurWithCurrentYearAndIncludeRentalsTrueReturns0()
         {
             Assert.True(_rentalCompany.CalculateIncome(2020, true) == 0);
+        }
+        [Fact]
+        public async Task CalculateIncomeIs0EurWithPassedYearAndIncludeNotCompletedRentalsIsFalse()
+        {
+            _scooterService.AddScooter("01", 0.10M);
+            _rentalCompany.StartRent("01");
+            await Task.Delay(3000);
+            Assert.True(_rentalCompany.CalculateIncome(2019, false) == 0);
         }
     }
 }

@@ -6,8 +6,6 @@ namespace ScooterRental.Library.Exceptions
 {
     public class AddScooterWithNegativePriceException: Exception
     {
-        public AddScooterWithNegativePriceException(){}
         public AddScooterWithNegativePriceException(string message):base(message){}
-        public AddScooterWithNegativePriceException(string message, Exception inner):base(message, inner){}
     }
 }

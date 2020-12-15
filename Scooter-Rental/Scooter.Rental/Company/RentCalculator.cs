@@ -21,7 +21,7 @@ namespace ScooterRental.Library.Company
             {
                 firstDayIncome = GetDayIncome(spanTotal.TotalMinutes, pricePerMinute);
                 totalIncome += firstDayIncome;
-                return totalIncome;
+                return decimal.Round(totalIncome, 2);
             }
             TimeSpan lastDayTime = GetLastDayTime(endRentDate);
             TimeSpan timeBetweenFirstAndLastDay = GetTimeBetweenFirstAndLastDayTime(startRentDate, endRentDate);
@@ -30,7 +30,7 @@ namespace ScooterRental.Library.Company
                 firstDayIncome = GetDayIncome(firstDayTime.TotalMinutes, pricePerMinute);
                 lastDayIncome = GetDayIncome(lastDayTime.TotalMinutes, pricePerMinute);
                 totalIncome += firstDayIncome + lastDayIncome;
-                return totalIncome;
+                return decimal.Round(totalIncome, 2);
             }
             firstDayIncome = GetDayIncome(firstDayTime.TotalMinutes, pricePerMinute);
             lastDayIncome = GetDayIncome(lastDayTime.TotalMinutes, pricePerMinute);
@@ -50,7 +50,7 @@ namespace ScooterRental.Library.Company
                     GetDayIncome(timeBetweenFirstAndLastDay.TotalMinutes, pricePerMinute);
                 totalIncome += timeBetweenFirstAndLastDayIncome;
             }
-            return totalIncome;
+            return decimal.Round(totalIncome, 2);
         }
 
         private TimeSpan GetFirstDayTime(DateTime startDate)

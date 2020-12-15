@@ -23,13 +23,22 @@ namespace Unit.Tests
             Assert.True(income == 0);
         }
         [Fact]
-        public void RentCalculatorReturnsIncomeForFirstDay()
+        public void RentCalculatorIncomeWithTwoDecimalPlaces()
+        {
+            var pricePerMinute = 0.08M;
+            var startRentDate = new DateTime(2020, 12, 11, 16, 0, 0);
+            var endRentDate = new DateTime(2020, 12, 11, 16, 9, 0);
+            decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
+            Assert.True(income == 0.72M);
+        }
+        [Fact]
+        public void RentCalculatorReturnsIncomeForFirstDayReturnsMaxIncomePerDay20()
         {
             var pricePerMinute = 0.15M;
             var startRentDate = new DateTime(2020, 12, 11, 16, 0, 0);
             var endRentDate = new DateTime(2020, 12, 11, 20, 0, 0);
             decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
-            Assert.True(Math.Ceiling(income) == 20.00M);
+            Assert.True(income == 20.00M);
         }
         [Fact]
         public void RentCalculatorReturnsIncomeForFirstDayLessThan20()
@@ -47,7 +56,7 @@ namespace Unit.Tests
             var startRentDate = new DateTime(2020, 12, 11, 23, 0, 0);
             var endRentDate = new DateTime(2020, 12, 11, 23, 59, 59);
             decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
-            Assert.True(Math.Ceiling(income) == 6.00M);
+            Assert.True(income == 6.00M);
         }
         [Fact]
         public void RentCalculatorReturnsIncomeForFirstDayWithEndDateInTheMidnight()
@@ -56,7 +65,7 @@ namespace Unit.Tests
             var startRentDate = new DateTime(2020, 12, 11, 23, 0, 0);
             var endRentDate = new DateTime(2020, 12, 12, 0, 0, 0);
             decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
-            Assert.True(Math.Ceiling(income) == 6.00M);
+            Assert.True(income == 6.00M);
         }
         [Fact]
         public void RentCalculatorForMoreThanOneDayReturnsMaxIncomeForTwoDays()
@@ -83,7 +92,7 @@ namespace Unit.Tests
             var startRentDate = new DateTime(2020, 12, 9, 23, 15, 0);
             var endRentDate = new DateTime(2020, 12, 10, 1, 0, 0);
             decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
-            Assert.True(Math.Ceiling(income) == 11.00M);
+            Assert.True(income == 10.50M);
         }
         [Fact]
         public void RentCalculatorIncomeForHigherPriceThroughMidnightReturnsMaxPriceForTwoDays()
@@ -101,7 +110,7 @@ namespace Unit.Tests
             var startRentDate = new DateTime(2020, 12, 08, 22, 00, 00);
             var endRentDate = new DateTime(2020, 12, 15, 22, 00, 00);
             decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
-            Assert.True(Math.Ceiling(income) == 152.00M);
+            Assert.True(income == 152.00M);
         }
         [Fact]
         public void RentCalculatorIncomeForOneMonth()
@@ -110,7 +119,7 @@ namespace Unit.Tests
             var startRentDate = new DateTime(2020, 12, 10, 22, 00, 00);
             var endRentDate = new DateTime(2021, 01, 10, 22, 00, 00);
             decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
-            Assert.True(Math.Ceiling(income) == 632.00M);
+            Assert.True(income == 632.00M);
         }
     }
 }

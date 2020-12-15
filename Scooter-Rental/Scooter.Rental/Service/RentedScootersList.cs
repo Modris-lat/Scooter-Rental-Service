@@ -25,12 +25,12 @@ namespace ScooterRental.Library.Service
 
         public void RemoveScooter(string id)
         {
-            RentedScooter scooter = GetScooterById(id);
-            if (scooter == null)
+            RentedScooter rentedScooter = GetScooterById(id);
+            if (rentedScooter == null)
             {
                 throw new RemoveNonRentedScooterException($"Scooter {id} is not rented.");
             }
-            _rentedScooters.Remove(scooter);
+            _rentedScooters.Remove(rentedScooter);
         }
 
         public IList<RentedScooter> GetScooters()
