@@ -32,6 +32,15 @@ namespace Unit.Tests
             Assert.True(income == 0.72M);
         }
         [Fact]
+        public void RentCalculatorIncomeOvernightWithNextMonthYear()
+        {
+            var pricePerMinute = 0.20M;
+            var startRentDate = new DateTime(2020, 12, 31, 16, 0, 0);
+            var endRentDate = new DateTime(2021, 01, 01, 16, 0, 0);
+            decimal income = _calculator.CalculateIncome(pricePerMinute, startRentDate, endRentDate);
+            Assert.True(income == 40.00M);
+        }
+        [Fact]
         public void RentCalculatorReturnsIncomeForFirstDayReturnsMaxIncomePerDay20()
         {
             var pricePerMinute = 0.15M;

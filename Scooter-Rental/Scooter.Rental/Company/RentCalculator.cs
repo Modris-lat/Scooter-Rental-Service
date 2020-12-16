@@ -55,8 +55,9 @@ namespace ScooterRental.Library.Company
 
         private TimeSpan GetFirstDayTime(DateTime startDate)
         {
+            DateTime nextDay = startDate.AddDays(1);
             TimeSpan firstDay = new DateTime(
-                    startDate.Year, startDate.Month, startDate.Day, 23, 59, 59)
+                    nextDay.Year, nextDay.Month, nextDay.Day, 00, 00, 00)
                 .Subtract(startDate);
             return firstDay;
         }
