@@ -1,10 +1,17 @@
 ﻿using System;
 using ScooterRental.Library.Interfaces;
+using ScooterRental.Library.Static;
 
 namespace ScooterRental.Library.Company
 {
     public class RentCalculator: IRentCalculator
     {
+        private readonly decimal _maxDailyIncome;
+
+        public RentCalculator()
+        {
+            _maxDailyIncome = StaticValues.MaxDailyIncome;
+        }
         public decimal CalculateIncome(decimal pricePerMinute, DateTime startRentDate, DateTime endRentDate)
         {
             decimal totalIncome = 0.00M;
@@ -38,9 +45,9 @@ namespace ScooterRental.Library.Company
             if (timeBetweenFirstAndLastDay.Days >= 1)
             {
                 var avg = (decimal)timeBetweenFirstAndLastDay.TotalMinutes * pricePerMinute / timeBetweenFirstAndLastDay.Days;
-                if (avg > 20)
+                if (avg > _maxDailyIncome)
                 {
-                    timeBetweenFirstAndLastDayIncome = 20.00M * timeBetweenFirstAndLastDay.Days;
+                    timeBetweenFirstAndLastDayIncome = _maxDailyIncome * timeBetweenFirstAndLastDay.Days;
                     totalIncome += timeBetweenFirstAndLastDayIncome;
                 }
             }
@@ -79,9 +86,9 @@ namespace ScooterRental.Library.Company
         private decimal GetDayIncome(double totalMinutes, decimal pricePerMinute)
         {
             decimal sum = (decimal)totalMinutes * pricePerMinute;
-            if (sum > 20)
+            if (sum > _maxDailyIncome)
             {
-                sum = 20.00M;
+                sum = _maxDailyIncome;
             }
             return sum;
         }

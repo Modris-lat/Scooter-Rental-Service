@@ -2,6 +2,7 @@
 using System.Linq;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
+using ScooterRental.Library.Models;
 
 namespace ScooterRental.Library.Service
 {
