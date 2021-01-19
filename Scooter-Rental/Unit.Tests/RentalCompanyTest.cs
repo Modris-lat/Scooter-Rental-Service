@@ -79,32 +79,38 @@ namespace Unit.Tests
         [Fact]
         public void EndRentForNotRentedScooterThrowsException()
         {
-            Assert.Throws<EndRentForNotRentedScooterException>(() => _rentalCompany.EndRent("01"));
+            var id = "01";
+            RentedScooter rentedScooter = null;
+            Mock.Arrange(() => _rentedScooters.GetScooterById(id)).Returns(rentedScooter);
+            Assert.Throws<EndRentForNotRentedScooterException>(() => _rentalCompany.EndRent(id));
         }
         [Fact]
-        public void EndRentRemovesRentedScooterReturnsEmptyRentedScooterList()
+        public void EndRentRemovesRentedScooterFromRentedScooterList()
         {
-            _scooterService.AddScooter("02", 0.10M);
-            _rentalCompany.StartRent("02");
-            _rentalCompany.EndRent("02");
-            IList<RentedScooter> rentedScooters = _rentedScooters.GetScooters();
-            Assert.False(rentedScooters.Any());
+            var id = "01";
+            _rentalCompany.EndRent(id);
+            Mock.Assert(() => _rentedScooters.RemoveScooter(id), Occurs.Once());
         }
         [Fact]
         public void EndRentSetScooterIsRentedToFalseScooterServiceReturnsScooterWithPropertyIsRentedFalse()
         {
-            _scooterService.AddScooter("02", 0.10M);
-            _rentalCompany.StartRent("02");
-            _rentalCompany.EndRent("02");
-            Scooter scooter = _scooterService.GetScooterById("02");
+            var id = "01";
+            var pricePerMinute = 0.10M;
+            var scooter = new Scooter(id, pricePerMinute);
+            Mock.Arrange(() => _scooterService.GetScooterById(id)).Returns(scooter);
+            _rentalCompany.EndRent(id);
             Assert.False(scooter.IsRented);
         }
         [Fact]
         public void EndRentReturnsIncomeMoreThan0()
         {
-            _scooterService.AddScooter("02", 0.10M);
-            _rentalCompany.StartRent("02");
-            Assert.True(_rentalCompany.EndRent("02") > 0);
+            var id = "01";
+            var pricePerMinute = 0.10M;
+            var startRentDate = new DateTime(2020, 12, 15);
+            var rentedScooter = new RentedScooter(id, pricePerMinute, startRentDate);
+            Mock.Arrange(() => _rentedScooters.GetScooterById(id)).Returns(rentedScooter);
+            decimal income = _rentalCompany.EndRent(id);
+            Assert.True(income > 0);
         }
         [Fact]
         public void CalculateIncomeWithNoPreviousIncomeReturns0()
