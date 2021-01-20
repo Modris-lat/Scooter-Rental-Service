@@ -9,5 +9,12 @@
     &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.RentalCompanyTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.RentedScootersTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.RentCalculatorTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest.GetAllIncomeReturnsEmptyList&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest.GetIncomeReturns0&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest.GetIncomeWithYearNullReturns0&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest.GetIncomeReturnsMoreThan0ForSpecificYear&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest.GetIncomeReturns0ForSpecificYearIfNoIncomeForThatYear&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest.GetIncomeWithYearNullReturnsTotalIncomeForAllYears&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::EAB5F951-7AEE-4487-BB32-DB64A91F2666::.NETCoreApp,Version=v3.1::Unit.Tests.AccountTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

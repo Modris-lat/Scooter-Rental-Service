@@ -5,6 +5,7 @@ using ScooterRental.Library.Company;
 using ScooterRental.Library.Exceptions;
 using ScooterRental.Library.Interfaces;
 using ScooterRental.Library.Models;
+using ScooterRental.Library.Static;
 using Telerik.JustMock;
 using Telerik.JustMock.Helpers;
 using Xunit;
@@ -13,15 +14,19 @@ namespace Unit.Tests
 {
     public class RentalCompanyTest
     {
+        private readonly IAccount _account;
         private readonly IRentalCompany _rentalCompany;
         private readonly IScooterService _scooterService;
         private readonly IRentedScootersList _rentedScooters;
+        private readonly IRentCalculator _calculator;
 
         public RentalCompanyTest()
         {
+            _account = Mock.Create<IAccount>();
             _scooterService = Mock.Create<IScooterService>();
             _rentedScooters = Mock.Create<IRentedScootersList>();
-            _rentalCompany = new RentalCompany("Company", _scooterService, _rentedScooters, new RentCalculator());
+            _calculator = Mock.Create<IRentCalculator>();
+            _rentalCompany = new RentalCompany("Company", _account, _scooterService, _rentedScooters, _calculator);
         }
 
         [Fact]
@@ -102,20 +107,41 @@ namespace Unit.Tests
             Assert.False(scooter.IsRented);
         }
         [Fact]
-        public void EndRentReturnsIncomeMoreThan0()
+        public void EndRentReturnsIncomeMoreThan0AfterIncomeIsCalculated()
         {
             var id = "01";
-            var pricePerMinute = 0.10M;
-            var startRentDate = new DateTime(2020, 12, 15);
-            var rentedScooter = new RentedScooter(id, pricePerMinute, startRentDate);
-            Mock.Arrange(() => _rentedScooters.GetScooterById(id)).Returns(rentedScooter);
+            decimal expectedIncome = StaticValues.MaxDailyIncome;
+            Mock.Arrange(
+                () => _calculator.CalculateIncome(
+                    Arg.IsAny<decimal>(),
+                    Arg.IsAny<DateTime>(),
+                    Arg.IsAny<DateTime>()
+                    )
+            )
+                .Returns(expectedIncome)
+                .MustBeCalled();
+            decimal actualIncome = _rentalCompany.EndRent(id);
+            Assert.Equal(expectedIncome, actualIncome);
+            Mock.Assert(_calculator);
+        }
+        [Fact]
+        public void EndRentAddsIncomeToAccount()
+        {
+            var id = "01";
             decimal income = _rentalCompany.EndRent(id);
-            Assert.True(income > 0);
+            Mock.Assert(() =>
+                _account.AddIncome(Arg.IsAny<int>(), Arg.IsAny<decimal>()), Occurs.Once());
         }
         [Fact]
         public void CalculateIncomeWithNoPreviousIncomeReturns0()
         {
-            Assert.True(_rentalCompany.CalculateIncome(null, false) == 0);
+            decimal expectedIncome = 0;
+            Mock.Arrange(() => _account.GetIncome(null))
+                .Returns(expectedIncome)
+                .MustBeCalled();
+            decimal actualIncome = _rentalCompany.CalculateIncome(null, false);
+            Assert.Equal(expectedIncome, actualIncome);
+            Mock.Assert(_account);
         }
         [Fact]
         public void CalculateIncomeIsNot0EurWithYearNullAndIncludeRentedFalseReturnsMoreThan0()
