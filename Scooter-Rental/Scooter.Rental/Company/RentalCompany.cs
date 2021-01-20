@@ -13,17 +13,19 @@ namespace ScooterRental.Library.Company
         private readonly IScooterService _scooterService;
         private readonly IRentedScootersList _rentedScooters;
         private readonly IRentCalculator _calculator;
-        private readonly IDictionary<int, decimal> _totalIncome;
         public RentalCompany(
-            string name, IAccount account, IScooterService scooterService, 
-            IRentedScootersList rentedScooters, IRentCalculator calculator)
+            string name, 
+            IAccount account,
+            IScooterService scooterService, 
+            IRentedScootersList rentedScooters, 
+            IRentCalculator calculator
+            )
         {
             Name = name;
             _account = account;
             _rentedScooters = rentedScooters;
             _scooterService = scooterService;
             _calculator = calculator;
-            _totalIncome = new Dictionary<int, decimal>{};
         }
         public string Name { get; }
         public void StartRent(string id)
