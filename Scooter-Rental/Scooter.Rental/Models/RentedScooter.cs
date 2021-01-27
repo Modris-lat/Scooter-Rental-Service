@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScooterRental.Library.Service
+namespace ScooterRental.Library.Models
 {
     public class RentedScooter
     {

@@ -1,4 +1,4 @@
-﻿namespace ScooterRental.Library.Service
+﻿namespace ScooterRental.Library.Models
 {
     public class Scooter
     {
