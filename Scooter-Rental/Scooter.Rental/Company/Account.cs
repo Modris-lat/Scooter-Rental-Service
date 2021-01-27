@@ -28,16 +28,11 @@ namespace ScooterRental.Library.Company
         }
         public decimal GetIncome(int? year)
         {
-            if (year != null)
+            if (year == null)
             {
-                if (ContainsIncomeForYear(year.Value))
-                {
-                    return _account[year.Value];
-                }
-
-                return 0;
+                return SumAllIncome();
             }
-            return SumAllIncome();
+            return (ContainsIncomeForYear(year.Value)) ? _account[year.Value] : 0;
         }
 
         bool ContainsIncomeForYear(int year)
